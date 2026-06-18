@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GMAW Real-Time Quality Monitoring Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        margin:0;
+        background:#f4f6f9;
+    }
+
+    header{
+        background:#0d1b2a;
+        color:white;
+        padding:20px;
+        text-align:center;
+    }
+
+    section{
+        background:white;
+        margin:15px;
+        padding:15px;
+        border-radius:10px;
+        box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .row{
+        display:flex;
+        gap:20px;
+        flex-wrap:wrap;
+        justify-content: center;
+    }
+
+    .card{
+        flex:1;
+        min-width:250px;
+        padding:10px;
+        border:1px solid #ddd;
+        border-radius:10px;
+        text-align: center;
+    }
+
+    .chart-container {
+        flex: 1;
+        min-width: 300px;
+        max-width: 400px;
+        padding: 10px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+    }
+
+    table, th, td{
+        border:1px solid #ccc;
+    }
+
+    th, td{
+        padding:8px;
+        text-align:center;
+    }
+
+    footer{
+        text-align:center;
+        padding:15px;
+        background:#0d1b2a;
+        color:white;
+    }
+
+    img{
+        width:100px;
+        height:100px;
+        object-fit: cover;
+        border-radius:50%;
+        margin-bottom: 10px;
+        border: 3px solid #0d1b2a;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>GMAW REAL-TIME QUALITY MONITORING SYSTEM</h1>
+    <h3>BMIK 2124 ELECTRICAL WELDING EQUIPMENT</h3>
+    <p>Assignment Dashboard</p>
+
+    <div class="row">
+
+        <div class="card">
+            <img src="elya.jpg" alt="Member 1">
+            <p><b>NUR ELYA ATIQAH BINTI SAHARIL</b><br>(B142410532)<br>Electrical Engineer</p>
+        </div>
+
+        <div class="card">
+            <img src="nad.jpg" alt="Member 2">
+            <p><b>NADHIRAH WAHIDAH BINTI ARMAN</b><br>(B142410505)<br>Thermal Analyst</p>
+        </div>
+
+        <div class="card">
+            <img src="wan.jpg" alt="Member 3">
+            <p><b>MUHAMAD RIDZUAN SHAH</b><br>(B1422410514)<br>Mechanical Analyst</p>
+        </div>
+
+    </div>
+</header>
+
+
+<section>
+    <h2>Data Source Panel (30 Samples)</h2>
+
+    <p>
+        The dataset consists of 30 GMAW welding samples containing
+        current, voltage, power, heat input, resistance and voltage drop measurements.
+    </p>
+
+    <div style="overflow-x:auto; overflow-y:auto; max-height:400px; border:1px solid #ccc; border-radius:10px;">
+    <table>
+        <thead style="position:sticky; top:0; background:#0d1b2a; color:white;">
+            <tr>
+                <th>Sample</th>
+                <th>Current (A)</th>
+                <th>Voltage (V)</th>
+                <th>Power (W)</th>
+                <th>Heat Input (kJ/mm)</th>
+                <th>Resistance (Ω)</th>
+                <th>Voltage Drop (V)</th>
+            </tr>
+        </thead>
+        <tbody id="dataTableBody">
+            </tbody>
+    </table>
+    </div>
+</section>
+
+<section>
+    <h2>Scatter Diagrams (3 Plots)</h2>
+    <div class="row">
+        <div class="chart-container">
+            <canvas id="scVoltage"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="scPower"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="scHeat"></canvas>
+        </div>
+    </div>
+</section>
+
+
+<section>
+    <h2>Table 2: Temperature Measurements for 25 Samples with Calculated Means and Ranges</h2>
+    <div style="overflow-x:auto; overflow-y:auto; max-height:400px; border:1px solid #ccc; border-radius:10px;">
+        <table style="font-size:14px;">
+            <thead style="position:sticky; top:0; background:#0d1b2a; color:white;">
+                <tr>
+                    <th>Sample</th>
+                    <th>Mean (X̄)</th>
+                    <th>Range (R)</th>
+                </tr>
+            </thead>
+            <tbody id="table2Body">
+                </tbody>
+        </table>
+    </div>
+</section>
+
+<section>
+    <h2>Control Charts Construction</h2>
+    <div class="row">
+        <div class="chart-container" style="max-width: 600px;">
+            <canvas id="xbarChart"></canvas>
+        </div>
+        <div class="chart-container" style="max-width: 600px;">
+            <canvas id="rChart"></canvas>
+        </div>
+    </div>
+    <p style="text-align:center;">Figure: Construction of X-bar and R Control Charts</p>
+</section>
+
+<section>
+    <h2>Table 3 – Load & Displacement Reference Data</h2>
+    <table>
+        <thead style="background:#0d1b2a; color:white;">
+            <tr>
+                <th>Measurement Point</th>
+                <th>Load (N)</th>
+                <th>Displacement (mm)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Arc Start</td><td>125</td><td>0.02</td></tr>
+            <tr><td>5 seconds</td><td>142</td><td>0.15</td></tr>
+            <tr><td>10 seconds</td><td>138</td><td>0.38</td></tr>
+            <tr><td>15 seconds</td><td>145</td><td>0.62</td></tr>
+            <tr><td>20 seconds</td><td>140</td><td>0.85</td></tr>
+            <tr><td>Arc Stop</td><td>135</td><td>1.02</td></tr>
+            <tr><td>After cooling (60 s)</td><td>N/A</td><td>0.48</td></tr>
+        </tbody>
+    </table>
+</section>
+
+
+<section>
+    <h2>Load & Displacement Reference Data Chart</h2>
+    <div style="text-align:center; max-width: 900px; margin: auto;">
+        <canvas id="ldChart"></canvas>
+    </div>
+    <p style="text-align:center; margin-top: 15px;">
+        Figure: Load (Bar) and Displacement (Line) Trend During Welding Process
+    </p>
+</section>
+
+
+<section>
+    <h2>Conclusion</h2>
+    <p>
+        The monitoring system successfully integrates electrical and mechanical data analysis for GMAW process optimization.
+        The results show stable trends in welding parameters with acceptable variation across samples.
+    </p>
+</section>
+
+
+<footer>
+    <p>GMAW Monitoring System Dashboard | BMIK 2124 Electrical Welding Equipment</p>
+    <p>Recommendations: Improve sensor calibration and increase sample size for better accuracy.</p>
+</footer>
+
+
+<script>
+/* ========================
+   DATA SOURCE (30 SAMPLES)
+======================== */
+const data30 = [
+    {id:1, c:185.2, v:24.8, p:4592.96, h:1.722, r:0.133, vd:50.72},
+    {id:2, c:192.6, v:25.1, p:4834.26, h:1.812, r:0.130, vd:50.42},
+    {id:3, c:178.4, v:24.2, p:4317.28, h:1.618, r:0.135, vd:51.32},
+    {id:4, c:205.8, v:25.9, p:5330.22, h:1.998, r:0.125, vd:49.62},
+    {id:5, c:168.3, v:23.7, p:3988.71, h:1.495, r:0.140, vd:51.82},
+    {id:6, c:195.2, v:25.3, p:4938.56, h:1.851, r:0.129, vd:50.22},
+    {id:7, c:210.4, v:26.1, p:5491.44, h:2.059, r:0.124, vd:49.42},
+    {id:8, c:182.7, v:24.5, p:4476.15, h:1.678, r:0.134, vd:51.02},
+    {id:9, c:220.1, v:26.7, p:5876.67, h:2.203, r:0.121, vd:48.82},
+    {id:10, c:188.5, v:24.7, p:4655.95, h:1.745, r:0.131, vd:50.82},
+    {id:11, c:215.3, v:26.5, p:5705.45, h:2.139, r:0.123, vd:49.02},
+    {id:12, c:175.2, v:23.9, p:4187.28, h:1.570, r:0.136, vd:51.62},
+    {id:13, c:200.6, v:25.6, p:5135.36, h:1.925, r:0.127, vd:49.92},
+    {id:14, c:165.8, v:23.4, p:3879.72, h:1.454, r:0.141, vd:52.12},
+    {id:15, c:225.4, v:27.0, p:6085.80, h:2.282, r:0.119, vd:48.52},
+    {id:16, c:212.5, v:26.3, p:5588.75, h:2.095, r:0.123, vd:49.22},
+    {id:17, c:198.3, v:25.4, p:5036.82, h:1.888, r:0.128, vd:50.12},
+    {id:18, c:225.7, v:27.1, p:6116.47, h:2.293, r:0.120, vd:48.42},
+    {id:19, c:189.6, v:24.9, p:4721.04, h:1.770, r:0.131, vd:50.62},
+    {id:20, c:235.2, v:28.0, p:6585.60, h:2.469, r:0.119, vd:47.52},
+    {id:21, c:175.8, v:24.0, p:4219.20, h:1.582, r:0.136, vd:51.52},
+    {id:22, c:220.4, v:26.8, p:5906.72, h:2.215, r:0.121, vd:48.72},
+    {id:23, c:195.5, v:25.3, p:4946.15, h:1.854, r:0.129, vd:50.22},
+    {id:24, c:208.9, v:26.0, p:5431.40, h:2.036, r:0.124, vd:49.52},
+    {id:25, c:170.2, v:23.8, p:4050.76, h:1.519, r:0.139, vd:51.72},
+    {id:26, c:230.8, v:27.5, p:6347.00, h:2.380, r:0.119, vd:48.02},
+    {id:27, c:185.9, v:24.8, p:4610.32, h:1.728, r:0.133, vd:50.72},
+    {id:28, c:218.3, v:26.6, p:5806.78, h:2.177, r:0.121, vd:48.92},
+    {id:29, c:195.0, v:25.2, p:4914.00, h:1.842, r:0.129, vd:50.32},
+    {id:30, c:210.1, v:26.2, p:5504.62, h:2.064, r:0.124, vd:49.32}
+];
+
+// Populate Table 1
+const table1Body = document.getElementById('dataTableBody');
+data30.forEach(d => {
+    table1Body.innerHTML += `<tr><td>${d.id}</td><td>${d.c}</td><td>${d.v}</td><td>${d.p}</td><td>${d.h}</td><td>${d.r}</td><td>${d.vd}</td></tr>`;
+});
+
+/* ========================
+   SCATTER PLOTS
+======================== */
+const scOptions = (titleX, titleY) => ({
+    plugins: { legend: { display: false } },
+    scales: {
+        x: { title: { display: true, text: titleX } },
+        y: { title: { display: true, text: titleY } }
+    }
+});
+
+// 1. Current vs Voltage
+new Chart(document.getElementById('scVoltage'), {
+    type: 'scatter',
+    data: { datasets: [{ data: data30.map(d => ({x: d.c, y: d.v})), backgroundColor: 'blue' }] },
+    options: { ...scOptions('Current (A)', 'Voltage (V)'), plugins: { title: {display:true, text:'Current vs Voltage'}}}
+});
+
+// 2. Current vs Power
+new Chart(document.getElementById('scPower'), {
+    type: 'scatter',
+    data: { datasets: [{ data: data30.map(d => ({x: d.c, y: d.p})), backgroundColor: 'red' }] },
+    options: { ...scOptions('Current (A)', 'Power (W)'), plugins: { title: {display:true, text:'Current vs Power'}}}
+});
+
+// 3. Current vs Heat Input
+new Chart(document.getElementById('scHeat'), {
+    type: 'scatter',
+    data: { datasets: [{ data: data30.map(d => ({x: d.c, y: d.h})), backgroundColor: 'green' }] },
+    options: { ...scOptions('Current (A)', 'Heat Input (kJ/mm)'), plugins: { title: {display:true, text:'Current vs Heat Input'}}}
+});
+
+/* ========================
+   TABLE 2 DATA (TEMP)
+======================== */
+const table2Data = [
+    {s:1, x:486.25, r:13.5}, {s:2, x:511.00, r:9.4}, {s:3, x:470.25, r:9.5}, {s:4, x:534.25, r:11.5},
+    {s:5, x:449.37, r:6.5}, {s:6, x:498.92, r:6.5}, {s:7, x:520.32, r:9.3}, {s:8, x:476.25, r:7.4},
+    {s:9, x:506.25, r:7.9}, {s:10, x:461.78, r:6.4}, {s:11, x:527.62, r:9.5}, {s:12, x:491.75, r:6.6},
+    {s:13, x:517.63, r:9.7}, {s:14, x:457.58, r:9.3}, {s:15, x:509.90, r:8.7}, {s:16, x:482.52, r:8.5},
+    {s:17, x:533.12, r:9.8}, {s:18, x:467.60, r:10.2}, {s:19, x:502.62, r:9.1}, {s:20, x:541.78, r:7.6},
+    {s:21, x:477.60, r:9.3}, {s:22, x:520.10, r:8.7}, {s:23, x:452.55, r:7.7}, {s:24, x:497.62, r:9.3}, {s:25, x:530.10, r:8.7}
+];
+const table2Body = document.getElementById('table2Body');
+table2Data.forEach(d => {
+    table2Body.innerHTML += `<tr><td>${d.s}</td><td>${d.x}</td><td>${d.r}</td></tr>`;
+});
+
+/* ========================
+   CONTROL CHARTS
+======================== */
+new Chart(document.getElementById('xbarChart'), {
+    type: 'line',
+    data: {
+        labels: table2Data.map(d => d.s),
+        datasets: [{
+            label: 'X-bar (Mean Temp)',
+            data: table2Data.map(d => d.x),
+            borderColor: 'blue',
+            fill: false,
+            tension: 0.1
+        }]
+    }
+});
+
+new Chart(document.getElementById('rChart'), {
+    type: 'line',
+    data: {
+        labels: table2Data.map(d => d.s),
+        datasets: [{
+            label: 'R Chart (Range)',
+            data: table2Data.map(d => d.r),
+            borderColor: 'red',
+            fill: false,
+            tension: 0.1
+        }]
+    }
+});
+
+/* ========================
+   LOAD & DISPLACEMENT CHART 
+   (Dual Axis - Combines Bar & Line)
+======================== */
+new Chart(document.getElementById('ldChart'), {
+    type: 'bar',
+    data: {
+        labels: ['15 seconds', '5 seconds', '20 seconds', '10 seconds', 'Arc Stop', 'Arc Start', 'After cooling'],
+        datasets: [
+            {
+                label: 'Load (N)',
+                type: 'bar',
+                data: [145, 142, 140, 138, 135, 125, 0], // Reordered to match your Pareto document
+                backgroundColor: '#4472c4',
+                yAxisID: 'y'
+            },
+            {
+                label: 'Displacement (mm)',
+                type: 'line',
+                data: [0.62, 0.15, 0.85, 0.38, 1.02, 0.02, 0.48], // Matched points to Load sorting
+                borderColor: '#ed7d31',
+                borderWidth: 3,
+                yAxisID: 'y1'
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { 
+                type: 'linear', 
+                position: 'left', 
+                title: {display:true, text:'Load (N)'} 
+            },
+            y1: { 
+                type: 'linear', 
+                position: 'right', 
+                title: {display:true, text:'Displacement (mm)'}, 
+                grid: {drawOnChartArea: false} 
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
+
+<section>
+    <h2>Conclusion</h2>
+    <p style="text-align:justify; line-height:1.8;">
+        This study successfully evaluated the electrical, thermal, and mechanical characteristics of the GMAW process. The results demonstrated that increases in welding current led to higher voltage, power, and heat input, indicating a positive relationship between electrical and thermal performance. Thermal analysis revealed some process instability due to temperature variations, while mechanical testing confirmed acceptable structural performance with a residual displacement of 0.48 mm, which is below the allowable limit of 0.50 mm. Overall, effective monitoring and control of welding parameters are essential to ensure weld quality, process stability, and structural integrity.
+    </p>
+</section>
